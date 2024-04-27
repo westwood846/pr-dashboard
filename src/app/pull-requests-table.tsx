@@ -31,7 +31,7 @@ const formatDate = (dateString: string) => {
 
 export const PullRequestsTable = () => {
   const [repos, setRepos] = useLocalStorage("repo", "...");
-  const reposAsArray = repos.split(/\s*,\s*/);
+  const reposAsArray = repos.split(/\s*,\s*/).filter((r) => r.match(".+/.+"));
   const [apiKey, setAPIKey] = useLocalStorage("api-key", "");
   const [drafts, setDrafts] = useLocalStorage("drafts", false);
   const queries = useManyPullRequests(apiKey, reposAsArray);
