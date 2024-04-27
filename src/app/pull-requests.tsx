@@ -1,6 +1,6 @@
 "use client";
 
-import { useQuery } from "@tanstack/react-query";
+import { useQueries, useQuery } from "@tanstack/react-query";
 import { Octokit } from "octokit";
 
 const fetchPullRequests = (auth: string, ownerRepo: string) => {
@@ -12,15 +12,25 @@ const fetchPullRequests = (auth: string, ownerRepo: string) => {
     headers: {
       "X-GitHub-Api-Version": "2022-11-28",
     },
-    sort: "created",
+    sort: "updated",
+    direction: "desc",
   });
 };
 
+const getOptions = (apiKey: string, repo: string) => ({
+  queryKey: ["pull-requests", repo],
+  queryFn: () => fetchPullRequests(apiKey, repo),
+  refetchInterval: 60000,
+});
+
 export const usePullRequests = (apiKey: string, repo: string) => {
-  const query = useQuery({
-    queryKey: ["pull-requests", repo],
-    queryFn: () => fetchPullRequests(apiKey, repo),
-    refetchInterval: 60000,
+  const query = useQuery(getOptions(apiKey, repo));
+  return query;
+};
+
+export const useManyPullRequests = (apiKey: string, repos: string[]) => {
+  const query = useQueries({
+    queries: repos.map((repo) => getOptions(apiKey, repo)),
   });
 
   return query;

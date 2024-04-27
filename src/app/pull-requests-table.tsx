@@ -2,8 +2,11 @@
 
 import {
   Alert,
+  Checkbox,
   CircularProgress,
+  FormControlLabel,
   IconButton,
+  Link,
   Stack,
   Table,
   TableBody,
@@ -17,7 +20,7 @@ import { OpenInNew } from "@mui/icons-material";
 import moment from "moment";
 import { useLocalStorage } from "usehooks-ts";
 
-import { usePullRequests } from "./pull-requests";
+import { useManyPullRequests, usePullRequests } from "./pull-requests";
 import { useState } from "react";
 
 const formatDate = (dateString: string) => {
@@ -27,9 +30,15 @@ const formatDate = (dateString: string) => {
 };
 
 export const PullRequestsTable = () => {
-  const [repo, setRepo] = useLocalStorage("repo", "DFHack/dfhack");
+  const [repos, setRepos] = useLocalStorage("repo", "...");
+  const reposAsArray = repos.split(/\s*,\s*/);
   const [apiKey, setAPIKey] = useLocalStorage("api-key", "");
-  const { data: pulls, isFetching, error } = usePullRequests(apiKey, repo);
+  const [drafts, setDrafts] = useLocalStorage("drafts", false);
+  const queries = useManyPullRequests(apiKey, reposAsArray);
+  const pulls = queries
+    .flatMap((q) => q.data?.data || [])
+    .sort((a, b) => moment(b.updated_at).diff(moment(a.updated_at)))
+    .filter((pull) => drafts || !pull.draft);
   return (
     <Stack spacing={4}>
       <Stack direction={"row"} spacing={2} alignItems={"center"}>
@@ -38,60 +47,87 @@ export const PullRequestsTable = () => {
           value={apiKey}
           onChange={(e) => setAPIKey(e.target.value)}
         />
+        <FormControlLabel
+          control={
+            <Checkbox
+              checked={drafts}
+              onChange={(_, checked) => setDrafts(checked)}
+              inputProps={{ "aria-label": "controlled" }}
+            />
+          }
+          label="Show Drafts?"
+        />
         <TextField
-          label="Repository"
-          value={repo}
-          onChange={(e) => setRepo(e.target.value)}
+          label="Repositories, comma separated"
+          value={repos}
+          onChange={(e) => setRepos(e.target.value)}
+          fullWidth
         />
         <CircularProgress
           size={24}
-          sx={{ visibility: isFetching ? "visible" : "hidden" }}
+          sx={{
+            visibility: queries.some((q) => q.isFetching)
+              ? "visible"
+              : "hidden",
+          }}
         />
       </Stack>
       <Table size="small">
         <TableHead>
           <TableRow>
+            <TableCell>Updated At</TableCell>
+            <TableCell>Waiting</TableCell>
             <TableCell>Repository</TableCell>
             <TableCell>PR Title</TableCell>
             <TableCell>Author</TableCell>
             <TableCell>Created At</TableCell>
-            <TableCell>Updated At</TableCell>
-            <TableCell>Status</TableCell>
             <TableCell>automerge</TableCell>
             <TableCell>Draft</TableCell>
             <TableCell>sha</TableCell>
-            <TableCell>Actions</TableCell>
+            <TableCell>Reviewers</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
-          {(pulls?.data || []).map((pull) => (
+          {pulls.map((pull) => (
             <TableRow key={pull.id}>
+              <TableCell>{formatDate(pull.updated_at)}</TableCell>
+              <TableCell>{moment(pull.updated_at).fromNow(true)}</TableCell>
               <TableCell>{pull.base.repo.full_name}</TableCell>
-              <TableCell>{pull.title}</TableCell>
+              <TableCell
+                sx={{
+                  maxWidth: 300,
+                  textOverflow: "ellipsis",
+                  overflow: "hidden",
+                  whiteSpace: "nowrap",
+                }}
+              >
+                <Link href={pull.html_url} target="_blank">
+                  {pull.title}
+                </Link>
+              </TableCell>
               <TableCell>{pull.user?.login}</TableCell>
               <TableCell>{formatDate(pull.created_at)}</TableCell>
-              <TableCell>{formatDate(pull.updated_at)}</TableCell>
-              <TableCell>{pull.state}</TableCell>
               <TableCell>{pull.auto_merge ? "Enabled" : "No"}</TableCell>
               <TableCell>{pull.draft ? "Draft" : "Ready"}</TableCell>
               <TableCell>
                 <code>{pull.merge_commit_sha?.substring(0, 6)}</code>
               </TableCell>
               <TableCell>
-                <IconButton
-                  component="a"
-                  href={pull.html_url}
-                  target="_blank"
-                  size="small"
-                >
-                  <OpenInNew />
-                </IconButton>
+                {pull.requested_reviewers?.map((r) => r.login).join(", ")}
               </TableCell>
             </TableRow>
           ))}
         </TableBody>
       </Table>
-      {error && <Alert severity="error">{error.message}</Alert>}
+      {queries.map((q, i) => (
+        <>
+          {q.error && (
+            <Alert severity="error" key={reposAsArray[i]}>
+              {q.error.message}
+            </Alert>
+          )}
+        </>
+      ))}
     </Stack>
   );
 };
