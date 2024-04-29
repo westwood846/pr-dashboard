@@ -5,10 +5,7 @@ import { Providers } from "./providers";
 export default function Home() {
   return (
     <Providers>
-      <Container component="main" maxWidth="xl">
-        <Typography variant="h1" sx={{ mb: 2 }}>
-          PR Dashboard
-        </Typography>
+      <Container component="main" maxWidth="xl" sx={{ py: 4 }}>
         <PullRequestsTable />
       </Container>
     </Providers>

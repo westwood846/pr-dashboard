@@ -5,7 +5,6 @@ import {
   Checkbox,
   CircularProgress,
   FormControlLabel,
-  IconButton,
   Link,
   Stack,
   Table,
@@ -14,14 +13,11 @@ import {
   TableHead,
   TableRow,
   TextField,
-  styled,
 } from "@mui/material";
-import { OpenInNew } from "@mui/icons-material";
 import moment from "moment";
 import { useLocalStorage } from "usehooks-ts";
 
 import { useManyPullRequests, usePullRequests } from "./pull-requests";
-import { useState } from "react";
 import {
   GitPullRequestDraftIcon,
   GitMergeQueueIcon,
