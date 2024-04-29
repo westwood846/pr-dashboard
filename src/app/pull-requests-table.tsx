@@ -48,6 +48,7 @@ export const PullRequestsTable = () => {
           label="GitHub API Key"
           value={apiKey}
           onChange={(e) => setAPIKey(e.target.value)}
+          size="small"
         />
         <FormControlLabel
           control={
@@ -55,23 +56,27 @@ export const PullRequestsTable = () => {
               checked={drafts}
               onChange={(_, checked) => setDrafts(checked)}
               inputProps={{ "aria-label": "controlled" }}
+              size="small"
             />
           }
           label="Show Drafts?"
+          slotProps={{ typography: { sx: { minWidth: "100px" } } }}
         />
         <TextField
           label="Repositories, comma separated"
           value={repos}
           onChange={(e) => setRepos(e.target.value)}
           fullWidth
+          size="small"
         />
         <TextField
           label="Negative Filter"
           value={negFilter}
           onChange={(e) => setNegFilter(e.target.value)}
+          size="small"
         />
         <CircularProgress
-          size={24}
+          size={16}
           sx={{
             visibility: queries.some((q) => q.isFetching)
               ? "visible"
