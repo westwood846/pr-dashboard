@@ -20,6 +20,9 @@ dependencies:
   '@mui/material':
     specifier: ^5.15.15
     version: 5.15.15(@emotion/react@11.11.4)(@emotion/styled@11.11.5)(@types/react@18.3.0)(react-dom@18.3.0)(react@18.3.0)
+  '@primer/octicons-react':
+    specifier: ^19.9.0
+    version: 19.9.0(react@18.3.0)
   '@tanstack/react-query':
     specifier: ^5.32.0
     version: 5.32.0(react@18.3.0)
@@ -885,6 +888,15 @@ packages:
 
   /@popperjs/core@2.11.8:
     resolution: {integrity: sha512-P1st0aksCrn9sGZhp8GMYwBnQsbvAWsZAX44oXNNvLHGqAOcoVxmjZiohstwQ7SqKnbR47akdNi+uleWD8+g6A==}
+    dev: false
+
+  /@primer/octicons-react@19.9.0(react@18.3.0):
+    resolution: {integrity: sha512-Uk4XrHyfylyfzZN9d8VFjF8FpfYHEyT4sabw+9+oP+GWAJHhPvNPTz6gXvUzJZmoblAvgcTrDslIPjz8zMh76w==}
+    engines: {node: '>=8'}
+    peerDependencies:
+      react: '>=16.3'
+    dependencies:
+      react: 18.3.0
     dev: false
 
   /@rushstack/eslint-patch@1.10.2:

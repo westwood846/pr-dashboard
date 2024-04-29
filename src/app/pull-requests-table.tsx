@@ -22,6 +22,10 @@ import { useLocalStorage } from "usehooks-ts";
 
 import { useManyPullRequests, usePullRequests } from "./pull-requests";
 import { useState } from "react";
+import {
+  GitPullRequestDraftIcon,
+  GitMergeQueueIcon,
+} from "@primer/octicons-react";
 
 const formatDate = (dateString: string) => {
   const date = moment(dateString);
@@ -78,11 +82,10 @@ export const PullRequestsTable = () => {
             <TableCell>Updated At</TableCell>
             <TableCell>Waiting</TableCell>
             <TableCell>Repository</TableCell>
+            <TableCell>&nbsp;</TableCell>
             <TableCell>PR Title</TableCell>
             <TableCell>Author</TableCell>
             <TableCell>Created At</TableCell>
-            <TableCell>automerge</TableCell>
-            <TableCell>Draft</TableCell>
             <TableCell>sha</TableCell>
             <TableCell>Reviewers</TableCell>
           </TableRow>
@@ -93,9 +96,13 @@ export const PullRequestsTable = () => {
               <TableCell>{formatDate(pull.updated_at)}</TableCell>
               <TableCell>{moment(pull.updated_at).fromNow(true)}</TableCell>
               <TableCell>{pull.base.repo.full_name}</TableCell>
+              <TableCell align="right">
+                {pull.auto_merge && <GitMergeQueueIcon />}
+                {pull.draft && <GitPullRequestDraftIcon />}
+              </TableCell>
               <TableCell
                 sx={{
-                  maxWidth: 300,
+                  maxWidth: "20%",
                   textOverflow: "ellipsis",
                   overflow: "hidden",
                   whiteSpace: "nowrap",
@@ -107,8 +114,6 @@ export const PullRequestsTable = () => {
               </TableCell>
               <TableCell>{pull.user?.login}</TableCell>
               <TableCell>{formatDate(pull.created_at)}</TableCell>
-              <TableCell>{pull.auto_merge ? "Enabled" : "No"}</TableCell>
-              <TableCell>{pull.draft ? "Draft" : "Ready"}</TableCell>
               <TableCell>
                 <code>{pull.merge_commit_sha?.substring(0, 6)}</code>
               </TableCell>
