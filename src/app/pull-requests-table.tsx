@@ -28,7 +28,7 @@ import { useLocalStorage } from "usehooks-ts";
 
 import { useManyPullRequests } from "./pull-requests";
 import { CheckIcon, FileDiffIcon, CommentIcon } from "@primer/octicons-react";
-import { useEffect } from "react";
+import { Fragment, useEffect } from "react";
 import { uniqBy } from "lodash";
 
 const formatDate = (dateString: string) => {
@@ -50,16 +50,12 @@ export const PullRequestsTable = () => {
     .filter((pull) => drafts || !pull.draft)
     .filter((pull) => !negFilter || !JSON.stringify(pull).includes(negFilter));
 
-  useEffect(() => {
-    if (pulls) console.log(pulls);
-  }, [pulls]);
-
   return (
     <Stack spacing={4}>
       <Stack direction={"row"} spacing={2} alignItems={"center"}>
         <TextField
           label="GitHub API Key"
-          value={apiKey}
+          value={typeof apiKey === "string" ? apiKey : ""}
           onChange={(e) => setAPIKey(e.target.value)}
           size="small"
         />
@@ -188,13 +184,13 @@ export const PullRequestsTable = () => {
         </TableBody>
       </Table>
       {queries.map((q, i) => (
-        <>
+        <Fragment key={reposAsArray[i]}>
           {q.error && (
-            <Alert severity="error" key={reposAsArray[i]}>
+            <Alert severity="error">
               {q.error.message} ({reposAsArray[i]})
             </Alert>
           )}
-        </>
+        </Fragment>
       ))}
     </Stack>
   );
