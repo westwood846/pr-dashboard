@@ -115,7 +115,9 @@ export const PullRequestsTable = () => {
             {/* <TableCell>Reviewers</TableCell> */}
             {/* <TableCell>Comments</TableCell> */}
             <TableCell>Reviews</TableCell>
-            <TableCell>Diff</TableCell>
+            <TableCell colSpan={2} sx={{ textAlign: "center" }}>
+              Diff
+            </TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
@@ -171,20 +173,19 @@ export const PullRequestsTable = () => {
                 <ReviewChip reviews={pull.reviews} state="CHANGES_REQUESTED" />
                 <ReviewChip reviews={pull.reviews} state="COMMENTED" />
               </TableCell>
+              <TableCell sx={{ textAlign: "right" }}>
+                <code>
+                  <Typography component={"span"} color="green" fontSize={14}>
+                    +{pull.additions}
+                  </Typography>{" "}
+                </code>
+              </TableCell>
               <TableCell>
-                <pre>
-                  <code>
-                    {/* <Typography component={"span"} fontSize={14}>
-                      #{pull.commits}
-                    </Typography>{" "} */}
-                    <Typography component={"span"} color="green" fontSize={14}>
-                      +{pull.additions}
-                    </Typography>{" "}
-                    <Typography component={"span"} color="red" fontSize={14}>
-                      -{pull.deletions}
-                    </Typography>
-                  </code>
-                </pre>
+                <code>
+                  <Typography component={"span"} color="red" fontSize={14}>
+                    -{pull.deletions}
+                  </Typography>
+                </code>
               </TableCell>
             </TableRow>
           ))}
