@@ -9,8 +9,11 @@ import {
   CircularProgress,
   FormControlLabel,
   Link,
+  List,
+  ListItem,
+  ListItemAvatar,
+  ListItemText,
   Stack,
-  Tab,
   Table,
   TableBody,
   TableCell,
@@ -23,17 +26,10 @@ import {
 import moment from "moment";
 import { useLocalStorage } from "usehooks-ts";
 
-import { useManyPullRequests, usePullRequests } from "./pull-requests";
-import {
-  GitPullRequestDraftIcon,
-  GitMergeQueueIcon,
-  CheckIcon,
-  FileDiffIcon,
-  CommentIcon,
-} from "@primer/octicons-react";
-import { CheckCircleOutline } from "@mui/icons-material";
+import { useManyPullRequests } from "./pull-requests";
+import { CheckIcon, FileDiffIcon, CommentIcon } from "@primer/octicons-react";
 import { useEffect } from "react";
-import { groupBy, uniqBy } from "lodash";
+import { uniqBy } from "lodash";
 
 const formatDate = (dateString: string) => {
   const date = moment(dateString);
@@ -209,7 +205,7 @@ type Review = NonNullable<
 >[number]["reviews"][number];
 type State = Review["state"];
 
-const StatusMeta = {
+const StateMeta = {
   APPROVED: [CheckIcon, "green", "approved this pull request"],
   CHANGES_REQUESTED: [FileDiffIcon, "red", "requested changes"],
   COMMENTED: [CommentIcon, "black", "commented"],
@@ -224,12 +220,31 @@ const ReviewChip = ({ reviews, state }: Props) => {
   const reviewsForState = reviews.filter((r) => r.state === state);
   if (!reviewsForState.length) return null;
   const uniqueReviewsForState = uniqBy(reviewsForState, (r) => r.user?.login);
-  const [Icon, color, title] = StatusMeta[state];
+  const [Icon, color, title] = StateMeta[state];
+  const reviewers = `${uniqueReviewsForState
+    .map((r) => r.user?.login || "Unknown")
+    .join(", ")} ${title}`;
   return (
     <Tooltip
-      title={`${uniqueReviewsForState
-        .map((r) => r.user?.login || "Unknown")
-        .join(", ")} ${title}`}
+      title={
+        <List>
+          {uniqueReviewsForState.map((r) => (
+            <Review key={r.id} review={r} />
+          ))}
+        </List>
+      }
+      componentsProps={{
+        tooltip: {
+          sx: {
+            bgcolor: "#EEEEEEF5",
+            maxWidth: 450,
+            padding: 0,
+            borderRadius: 3,
+            border: `1px solid #CCC`,
+          },
+        },
+      }}
+      placement="top"
     >
       <Chip
         label={
@@ -250,5 +265,29 @@ const ReviewChip = ({ reviews, state }: Props) => {
         size="small"
       />
     </Tooltip>
+  );
+};
+
+interface ReviewProps {
+  review: Review;
+}
+
+const Review = ({ review }: ReviewProps) => {
+  return (
+    <ListItem>
+      <ListItemAvatar>
+        <Avatar
+          alt={review.user?.login}
+          src={review.user?.avatar_url}
+          sx={{ width: 32, height: 32 }}
+        />
+      </ListItemAvatar>
+      <ListItemText
+        primary={`${review.user?.login} ${StateMeta[review.state][2]}`}
+        secondary={review.body}
+        primaryTypographyProps={{ color: "text.primary", fontSize: 16 }}
+        secondaryTypographyProps={{ color: "text.secondary", fontSize: 14 }}
+      />
+    </ListItem>
   );
 };
