@@ -28,7 +28,7 @@ import { useLocalStorage } from "usehooks-ts";
 
 import { useManyPullRequests } from "./pull-requests";
 import { CheckIcon, FileDiffIcon, CommentIcon } from "@primer/octicons-react";
-import { Fragment, useEffect } from "react";
+import { Fragment } from "react";
 import { uniqBy } from "lodash";
 
 const formatDate = (dateString: string) => {
@@ -99,13 +99,10 @@ export const PullRequestsTable = () => {
             <TableCell sx={{ textAlign: "right" }}>Updated At</TableCell>
             <TableCell>Waiting</TableCell>
             <TableCell sx={{ textAlign: "right" }}>Repository</TableCell>
-            {/* <TableCell>&nbsp;</TableCell> */}
             <TableCell>PR Title</TableCell>
             <TableCell>Author</TableCell>
             <TableCell>Created At</TableCell>
             <TableCell>sha</TableCell>
-            {/* <TableCell>Reviewers</TableCell> */}
-            {/* <TableCell>Comments</TableCell> */}
             <TableCell>Reviews</TableCell>
             <TableCell colSpan={2} sx={{ textAlign: "center" }}>
               Diff
@@ -122,21 +119,6 @@ export const PullRequestsTable = () => {
               <TableCell sx={{ textAlign: "right" }}>
                 {pull.base.repo.full_name}
               </TableCell>
-              {/* <TableCell align="right">
-                {pull.auto_merge && (
-                  <Tooltip title="Automerge is enabled">
-                    <GitMergeQueueIcon />
-                  </Tooltip>
-                )}
-                {pull.draft && (
-                  <Tooltip title="This is a draft">
-                    <GitPullRequestDraftIcon />
-                  </Tooltip>
-                )}
-                {pull.mergeable && (
-                  <CheckCircleOutline color="success" sx={{ fontSize: 16 }} />
-                )}
-              </TableCell> */}
               <TableCell
                 sx={{
                   maxWidth: "350px",
@@ -154,12 +136,6 @@ export const PullRequestsTable = () => {
               <TableCell>
                 <code>{pull.merge_commit_sha?.substring(0, 8)}</code>
               </TableCell>
-              {/* <TableCell>
-                {pull.requested_reviewers?.map((r) => r.login).join(", ")}
-              </TableCell> */}
-              {/* <TableCell>
-                {pull.comments} / {pull.review_comments}
-              </TableCell> */}
               <TableCell>
                 <ReviewChip reviews={pull.reviews} state="APPROVED" />
                 <ReviewChip reviews={pull.reviews} state="CHANGES_REQUESTED" />
@@ -217,9 +193,6 @@ const ReviewChip = ({ reviews, state }: Props) => {
   if (!reviewsForState.length) return null;
   const uniqueReviewsForState = uniqBy(reviewsForState, (r) => r.user?.login);
   const [Icon, color, title] = StateMeta[state];
-  const reviewers = `${uniqueReviewsForState
-    .map((r) => r.user?.login || "Unknown")
-    .join(", ")} ${title}`;
   return (
     <Tooltip
       title={
