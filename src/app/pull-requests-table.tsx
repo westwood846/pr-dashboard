@@ -34,11 +34,13 @@ export const PullRequestsTable = () => {
   const reposAsArray = repos.split(/\s*,\s*/).filter((r) => r.match(".+/.+"));
   const [apiKey, setAPIKey] = useLocalStorage("api-key", "...");
   const [drafts, setDrafts] = useLocalStorage("drafts", false);
+  const [negFilter, setNegFilter] = useLocalStorage("Negative Filter", "");
   const queries = useManyPullRequests(apiKey, reposAsArray);
   const pulls = queries
     .flatMap((q) => q.data?.data || [])
     .sort((a, b) => moment(b.updated_at).diff(moment(a.updated_at)))
-    .filter((pull) => drafts || !pull.draft);
+    .filter((pull) => drafts || !pull.draft)
+    .filter((pull) => !negFilter || !JSON.stringify(pull).includes(negFilter));
   return (
     <Stack spacing={4}>
       <Stack direction={"row"} spacing={2} alignItems={"center"}>
@@ -62,6 +64,11 @@ export const PullRequestsTable = () => {
           value={repos}
           onChange={(e) => setRepos(e.target.value)}
           fullWidth
+        />
+        <TextField
+          label="Negative Filter"
+          value={negFilter}
+          onChange={(e) => setNegFilter(e.target.value)}
         />
         <CircularProgress
           size={24}
