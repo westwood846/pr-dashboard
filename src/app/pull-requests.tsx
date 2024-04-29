@@ -3,10 +3,10 @@
 import { useQueries, useQuery } from "@tanstack/react-query";
 import { Octokit } from "octokit";
 
-const fetchPullRequests = (auth: string, ownerRepo: string) => {
+const fetchPullRequests = async (auth: string, ownerRepo: string) => {
   const octokit = new Octokit({ auth });
   const [owner, repo] = ownerRepo.split("/");
-  return octokit.request("GET /repos/{owner}/{repo}/pulls", {
+  const pulls = await octokit.request("GET /repos/{owner}/{repo}/pulls", {
     owner,
     repo,
     headers: {
@@ -15,6 +15,19 @@ const fetchPullRequests = (auth: string, ownerRepo: string) => {
     sort: "updated",
     direction: "desc",
   });
+  const detailledPulls = await Promise.all(
+    pulls.data.map((pull) =>
+      octokit.request("GET /repos/{owner}/{repo}/pulls/{pull_number}", {
+        owner,
+        repo,
+        pull_number: pull.number,
+        headers: {
+          "X-GitHub-Api-Version": "2022-11-28",
+        },
+      })
+    )
+  );
+  return detailledPulls;
 };
 
 const getOptions = (apiKey: string, repo: string) => ({
