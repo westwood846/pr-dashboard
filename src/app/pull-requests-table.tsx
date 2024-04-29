@@ -102,7 +102,7 @@ export const PullRequestsTable = () => {
               </TableCell>
               <TableCell
                 sx={{
-                  maxWidth: "20%",
+                  maxWidth: "350px",
                   textOverflow: "ellipsis",
                   overflow: "hidden",
                   whiteSpace: "nowrap",
@@ -128,7 +128,7 @@ export const PullRequestsTable = () => {
         <>
           {q.error && (
             <Alert severity="error" key={reposAsArray[i]}>
-              {q.error.message}
+              {q.error.message} ({reposAsArray[i]})
             </Alert>
           )}
         </>
@@ -136,10 +136,3 @@ export const PullRequestsTable = () => {
     </Stack>
   );
 };
-
-const Toolbar = styled("div")(({ theme }) => ({
-  display: "flex",
-  marginBottom: theme.spacing(2),
-  // backgroundColor: theme.palette.primary.main,
-  // borderRadius: "20px",
-}));
