@@ -131,7 +131,7 @@ export const PullRequestsTable = () => {
               <TableCell>{pull.user?.login}</TableCell>
               <TableCell>{formatDate(pull.created_at)}</TableCell>
               <TableCell>
-                <code>{pull.merge_commit_sha?.substring(0, 6)}</code>
+                <code>{pull.merge_commit_sha?.substring(0, 8)}</code>
               </TableCell>
               {/* <TableCell>
                 {pull.requested_reviewers?.map((r) => r.login).join(", ")}
