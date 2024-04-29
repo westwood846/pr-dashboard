@@ -4,6 +4,7 @@ import {
   Alert,
   Avatar,
   AvatarGroup,
+  Box,
   Checkbox,
   Chip,
   CircularProgress,
@@ -29,7 +30,7 @@ import { useLocalStorage } from "usehooks-ts";
 import { useManyPullRequests } from "./pull-requests";
 import { CheckIcon, FileDiffIcon, CommentIcon } from "@primer/octicons-react";
 import { Fragment } from "react";
-import { uniqBy } from "lodash";
+import { maxBy, uniqBy } from "lodash";
 
 const formatDate = (dateString: string) => {
   const date = moment(dateString);
@@ -83,14 +84,6 @@ export const PullRequestsTable = () => {
           value={negFilter}
           onChange={(e) => setNegFilter(e.target.value)}
           size="small"
-        />
-        <CircularProgress
-          size={16}
-          sx={{
-            visibility: queries.some((q) => q.isFetching)
-              ? "visible"
-              : "hidden",
-          }}
         />
       </Stack>
       <Table size="small">
@@ -168,6 +161,20 @@ export const PullRequestsTable = () => {
           )}
         </Fragment>
       ))}
+      <Box sx={{ textAlign: "right", color: "text.secondary" }}>
+        {queries.some((q) => q.isFetching) && (
+          <Typography variant="caption">Loading... </Typography>
+        )}
+        <Typography variant="caption">
+          {pulls.length} pull requests.{" "}
+        </Typography>
+        <Typography variant="caption">
+          Last updated at{" "}
+          {moment(maxBy(queries, "dataUpdatedAt")?.dataUpdatedAt).format(
+            "LTS"
+          ) || "-"}
+        </Typography>
+      </Box>
     </Stack>
   );
 };
