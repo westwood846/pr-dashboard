@@ -50,6 +50,7 @@ export const PullRequestsTable = () => {
     .sort((a, b) => moment(b.updated_at).diff(moment(a.updated_at)))
     .filter((pull) => drafts || !pull.draft)
     .filter((pull) => !negFilter || !JSON.stringify(pull).includes(negFilter));
+  const updatedAt = maxBy(queries, "dataUpdatedAt")?.dataUpdatedAt;
 
   return (
     <Stack spacing={4}>
@@ -169,10 +170,7 @@ export const PullRequestsTable = () => {
           {pulls.length} pull requests.{" "}
         </Typography>
         <Typography variant="caption">
-          Last updated at{" "}
-          {moment(maxBy(queries, "dataUpdatedAt")?.dataUpdatedAt).format(
-            "LTS"
-          ) || "-"}
+          Last updated at {updatedAt ? moment(updatedAt).format("LTS") : "-"}
         </Typography>
       </Box>
     </Stack>
